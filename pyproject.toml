@@ -27,4 +27,6 @@ target-version = "py311"
 line-length = 119
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+log_level = "DEBUG"
+python_files = ["*_test.py"]
+python_functions = ["test_*"]
