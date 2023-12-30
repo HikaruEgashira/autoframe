@@ -5,7 +5,7 @@ import autogen
 
 logging.basicConfig(level=logging.INFO)
 
-config_list = autogen.config_list_from_dotenv()
+config_list = autogen.config_list_from_dotenv(model_api_key_map={"gpt-4-1106-preview": "OPENAI_API_KEY"})
 llm_config = {
     "cache_seed": 42,
     "config_list": config_list,
