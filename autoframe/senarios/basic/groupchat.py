@@ -5,9 +5,7 @@ import autogen
 
 logging.basicConfig(level=logging.WARN)
 
-config_list = autogen.config_list_from_models(
-    model_list=["gpt-4-1106-preview"],
-)
+config_list = autogen.config_list_from_dotenv()
 llm_config = {
     "cache_seed": 42,
     "config_list": config_list,
@@ -25,7 +23,6 @@ class CommonConversableAgent(autogen.ConversableAgent):
             llm_config=llm_config,
             system_message=f"""
 Your name is {name}.
-同調性が低い性格をしています。
 会話を終了するには「TERMINATE」と入力してください。
 {additional_system_message}
 """,
@@ -36,10 +33,7 @@ Your name is {name}.
         )
 
 
-agent_a = CommonConversableAgent(
-    name="Agent-A",
-    additional_system_message="和食が好きです。",
-)
+agent_a = CommonConversableAgent(name="Agent-A", additional_system_message="和食が好きです。社長です。")
 
 agent_b = CommonConversableAgent(
     name="Agent-B",

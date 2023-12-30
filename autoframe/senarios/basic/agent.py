@@ -3,11 +3,9 @@ import logging
 
 import autogen
 
-logging.basicConfig(level=logging.WARN)
+logging.basicConfig(level=logging.INFO)
 
-config_list = autogen.config_list_from_models(
-    model_list=["gpt-4-1106-preview"],
-)
+config_list = autogen.config_list_from_dotenv()
 llm_config = {
     "cache_seed": 42,
     "config_list": config_list,
@@ -28,6 +26,7 @@ ENSURE THAT THE ORIGINAL CODE TO ADDRESS THE TASK STILL GETS EXECUTED.
 If the request HAS been addressed, respond with a summary of the result.
 The summary must be written as a coherent helpful response to the user request.
 e.g. 'Sure, here is result to your request ' or 'The tallest mountain in Africa is ..' etc.
+use japanese.
 """,
     human_input_mode="NEVER",
     max_consecutive_auto_reply=10,
@@ -50,6 +49,6 @@ user_proxy = autogen.UserProxyAgent(
 user_proxy.initiate_chat(
     agent,
     message="""
-Tell me now with JST.
+Calculate the year-to-date gain for META and TESLA.
 """,
 )

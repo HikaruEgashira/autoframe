@@ -9,9 +9,7 @@ import autogen
 
 logging.basicConfig(level=logging.WARN)
 
-config_list = autogen.config_list_from_models(
-    model_list=["gpt-4-1106-preview"],
-)
+config_list = autogen.config_list_from_dotenv()
 llm_config = {
     "cache_seed": 42,
     "config_list": config_list,
