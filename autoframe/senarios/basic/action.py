@@ -21,6 +21,8 @@ constructor = autogen.AssistantAgent(
     bad: 3 * 4
     good: 3 + 3 + 3 + 3
     DO NOT EVALUATE THE EXPRESSION. JUST GENERATE THE EXPRESSION.
+    Take a breath.
+    Let's think step by step.
     """,
 )
 constructor_user = autogen.UserProxyAgent(
@@ -31,7 +33,7 @@ constructor_user = autogen.UserProxyAgent(
 
 
 def ask_constructor(message):
-    constructor_user.initiate_chat(constructor, message=message)
+    constructor_user.initiate_chat(constructor, message=message, silent=True)
     last_message = constructor_user.last_message()
     return last_message["content"] if last_message is not None else ""
 
@@ -74,7 +76,7 @@ if user ask math problems.
             },
             {
                 "name": "calc_sum",
-                "description": """Calculate the sum of list[int]""",
+                "description": """数値の合計を計算する""",
                 "parameters": {
                     "type": "object",
                     "properties": {
