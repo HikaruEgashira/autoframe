@@ -26,19 +26,18 @@ ENSURE THAT THE ORIGINAL CODE TO ADDRESS THE TASK STILL GETS EXECUTED.
 If the request HAS been addressed, respond with a summary of the result.
 The summary must be written as a coherent helpful response to the user request.
 e.g. 'Sure, here is result to your request ' or 'The tallest mountain in Africa is ..' etc.
-use japanese.
+Always respond in Japanese.
 """,
-    human_input_mode="NEVER",
+    is_termination_msg=lambda x: x.get("content", "") == "",  # user_proxy response empty string
     max_consecutive_auto_reply=10,
 )
 
 # create a UserProxyAgent instance named "user_proxy"
 user_proxy = autogen.UserProxyAgent(
     name="user_proxy",
-    human_input_mode="NEVER",
-    default_auto_reply=None,
+    human_input_mode="TERMINATE",
     max_consecutive_auto_reply=10,
-    is_termination_msg=lambda x: x.get("content", "").rstrip().endswith("TERMINATE"),
+    is_termination_msg=lambda x: x.get("content", "").rstrip().endswith("TERMINATE"),  # agent response "TERMINATE"
     code_execution_config={
         "work_dir": "_coding",
         "use_docker": False,
