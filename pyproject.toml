@@ -20,6 +20,8 @@ pyautogen = {extras = ["mathchat"], version = "^0.2.2"}
 [tool.poetry.group.langchain.dependencies]
 playwright = "^1.40.0"
 lxml = "^5.0.0"
+langchain-community = "^0.0.7"
+langchain = "^0.0.353"
 
 [build-system]
 requires = ["poetry-core"]

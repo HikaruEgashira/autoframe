@@ -10,5 +10,11 @@
   "python.testing.pytestEnabled": true,
   "ruff.lint.args": [
     "--config=./pyproject.toml"
-  ]
+  ],
+  "python.analysis.typeCheckingMode": "basic",
+  "jupyter.allowUnauthorizedRemoteConnection": true,
+  "jupyter.interactiveWindow.textEditor.magicCommandsAsComments": true,
+  "python.analysis.extraPaths": [
+    "${workspaceRoot}/.venv/bin/python"
+  ],
 }
