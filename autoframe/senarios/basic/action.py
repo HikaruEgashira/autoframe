@@ -1,10 +1,18 @@
+# 動かすには .venv/lib/python3.11/site-packages/autogen/agentchat/conversable_agent.py:638 のmode="dict"を削除する
 import logging
+import os
 
 import autogen
 
-logging.basicConfig(level=logging.WARN)
+logging.basicConfig(level=logging.INFO)
 
-config_list = autogen.config_list_from_dotenv(model_api_key_map={"gpt-4-1106-preview": "OPENAI_API_KEY"})
+openai_apikey = os.getenv("OPENAI_API_KEY")
+config_list = [
+    {
+        "model": "gpt-3.5-turbo-1106",
+        "api_key": openai_apikey,
+    }
+]
 llm_config = {
     "cache_seed": 42,
     "config_list": config_list,
@@ -32,10 +40,45 @@ constructor_user = autogen.UserProxyAgent(
 )
 
 
+ask_constructor_doc = {
+    "name": "ask_constructor",
+    "description": """数式を生成する""",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "message": {
+                "type": "string",
+                "description": """コンストラクターに尋ねる質問。
+                    コードと実行結果など、十分な文脈を含めるようにしてください。
+                    ユーザーとの会話をコンストラクターと共有しない限り、コンストラクターは会話を知りません。""",
+            },
+        },
+        "required": ["message"],
+    },
+}
+
+
 def ask_constructor(message):
     constructor_user.initiate_chat(constructor, message=message, silent=True)
     last_message = constructor_user.last_message()
     return last_message["content"] if last_message is not None else ""
+
+
+calc_sum_doc = {
+    "name": "calc_sum",
+    "description": """数値の合計を計算する""",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "numbers": {
+                "type": "array",
+                "items": {"type": "number"},
+                "description": """数値のリスト""",
+            },
+        },
+        "required": ["numbers"],
+    },
+}
 
 
 def calc_sum(numbers):
@@ -58,37 +101,8 @@ if user ask math problems.
         "cache_seed": 42,
         "config_list": config_list,
         "functions": [
-            {
-                "name": "ask_constructor",
-                "description": """数式を生成する""",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "message": {
-                            "type": "string",
-                            "description": """コンストラクターに尋ねる質問。
-                                コードと実行結果など、十分な文脈を含めるようにしてください。
-                                ユーザーとの会話をコンストラクターと共有しない限り、コンストラクターは会話を知りません。""",
-                        },
-                    },
-                    "required": ["message"],
-                },
-            },
-            {
-                "name": "calc_sum",
-                "description": """数値の合計を計算する""",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "numbers": {
-                            "type": "array",
-                            "items": {"type": "number"},
-                            "description": """数値のリスト""",
-                        },
-                    },
-                    "required": ["numbers"],
-                },
-            },
+            ask_constructor_doc,
+            calc_sum_doc,
         ],
     },
 )
@@ -113,6 +127,6 @@ user_proxy.initiate_chat(
         3人のユーザーが2つのりんごを購入しました。
         2人のユーザーが1つのりんごを購入しました。
         1人のユーザーが0個のりんごを購入しました。
-        10人のユーザーは何個のりんごを購入しましたか？
+        合計で何個のりんごを購入しましたか？
         """,
 )

@@ -1,7 +1,8 @@
 from typing import Dict, Optional, Union
+import os
 
 import chainlit as cl
-from autogen import Agent, AssistantAgent, UserProxyAgent, config_list_from_models
+from autogen import Agent, AssistantAgent, UserProxyAgent
 
 TASK = "Plot a chart of NVDA stock price change YTD and save it on disk."
 
@@ -93,9 +94,13 @@ class ChainlitUserProxyAgent(UserProxyAgent):
 
 @cl.on_chat_start
 async def on_chat_start():
-    config_list = config_list_from_models(
-        model_list=["gpt-4-1106-preview"],
-    )
+    openai_apikey = os.getenv("OPENAI_API_KEY")
+    config_list = [
+        {
+            "model": "gpt-3.5-turbo-1106",
+            "api_key": openai_apikey,
+        }
+    ]
     assistant = ChainlitAssistantAgent(
         "assistant", llm_config={"config_list": config_list}
     )

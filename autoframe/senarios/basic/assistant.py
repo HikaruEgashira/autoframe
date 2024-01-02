@@ -1,11 +1,18 @@
 """Calculate the year-to-date gain for META and TESLA."""
 import logging
+import os
 
 import autogen
 
 logging.basicConfig(level=logging.WARN)
 
-config_list = autogen.config_list_from_dotenv(model_api_key_map={"gpt-4-1106-preview": "OPENAI_API_KEY"})
+openai_apikey = os.getenv("OPENAI_API_KEY")
+config_list = [
+    {
+        "model": "gpt-3.5-turbo-1106",
+        "api_key": openai_apikey,
+    }
+]
 llm_config = {
     "cache_seed": 42,
     "config_list": config_list,
