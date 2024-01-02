@@ -13,6 +13,7 @@ chainlit = "^0.7.700"
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.1.8"
 pytest = "^7.4.3"
+ipykernel = "^6.28.0"
 
 [build-system]
 requires = ["poetry-core"]
