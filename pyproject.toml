@@ -7,13 +7,19 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.12"
-pyautogen = {extras = ["mathchat"], version = "^0.2.2"}
 chainlit = "^0.7.700"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.1.8"
 pytest = "^7.4.3"
 ipykernel = "^6.28.0"
+
+[tool.poetry.group.autogen.dependencies]
+pyautogen = {extras = ["mathchat"], version = "^0.2.2"}
+
+[tool.poetry.group.langchain.dependencies]
+playwright = "^1.40.0"
+lxml = "^5.0.0"
 
 [build-system]
 requires = ["poetry-core"]
