@@ -7,10 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.12"
-pyautogen = "^0.2.2"
-docker = "^7.0.0"
-openai = "^1.4.0"
-pillow = "^10.1.0"
+pyautogen = {extras = ["mathchat"], version = "^0.2.2"}
 chainlit = "^0.7.700"
 
 [tool.poetry.group.dev.dependencies]
