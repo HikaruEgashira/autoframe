@@ -1,22 +1,10 @@
-"""
-chainlit run autoframe/senarios/express/main.py -w
-"""
-
-
 import logging
-import os
 from typing import Dict, Optional, Union
 
 import chainlit as cl
 from autogen import Agent, AssistantAgent, UserProxyAgent
 
 logging.basicConfig(level=logging.INFO)
-
-
-def is_termination_msg(x):
-    return x.get("content", "") and (
-        x.get("content", "").rstrip().endswith("TERMINATE") or x.get("content", "").rstrip().endswith("TERMINATE.")
-    )
 
 
 async def ask_helper(func, **kwargs):
@@ -34,12 +22,21 @@ class ChainlitAssistantAgent(AssistantAgent):
         request_reply: Optional[bool] = None,
         silent: Optional[bool] = False,
     ):
-        cl.run_sync(
-            cl.Message(
-                content=f'*Sending message to "{recipient.name}":*\n\n{message}',
-                author="AssistantAgent",
-            ).send()
-        )
+        logging.info(f"message: {message}")
+        if isinstance(message, str):
+            cl.run_sync(
+                cl.Message(
+                    content=f"@{recipient.name}\n{message}",
+                    author=self.name,
+                ).send()
+            )
+        elif "content" in message and message["content"] is not None:
+            cl.run_sync(
+                cl.Message(
+                    content=f'@{recipient.name}\n{message["content"]}',
+                    author=self.name,
+                ).send()
+            )
         super(ChainlitAssistantAgent, self).send(
             message=message,
             recipient=recipient,
@@ -52,7 +49,9 @@ class ChainlitUserProxyAgent(UserProxyAgent):
     def get_human_input(self, prompt: str) -> str:
         # プログラムの場合、ユーザーの入力を待たずに実行する
         messages = [m for ms in self.chat_messages.values() for m in ms]
-        if "```" in messages[-1].get("content", ""):
+        last_message = messages[-1].get("content", "")
+        logging.info(f"last_message: {last_message}")
+        if last_message is None or "```" in last_message or "function_call" in last_message:
             return ""
         if prompt.startswith("Provide feedback to assistant. Press enter to skip and use auto-reply"):
             res = cl.run_sync(
@@ -76,7 +75,6 @@ class ChainlitUserProxyAgent(UserProxyAgent):
                 return "exit"
 
         reply = cl.run_sync(ask_helper(cl.AskUserMessage, content=prompt, timeout=60))
-        logging.info(f"User reply: {reply}")
         return reply["content"].strip()
 
     def send(
@@ -86,35 +84,23 @@ class ChainlitUserProxyAgent(UserProxyAgent):
         request_reply: Optional[bool] = None,
         silent: Optional[bool] = False,
     ):
+        if isinstance(message, str):
+            cl.run_sync(
+                cl.Message(
+                    content=f"@{recipient.name}\n{message}",
+                    author=self.name,
+                ).send()
+            )
+        elif "content" in message and message["content"] is not None:
+            cl.run_sync(
+                cl.Message(
+                    content=f'@{recipient.name}\n{message["content"]}',
+                    author=self.name,
+                ).send()
+            )
         super(ChainlitUserProxyAgent, self).send(
             message=message,
             recipient=recipient,
             request_reply=request_reply,
             silent=silent,
         )
-
-
-openai_apikey = os.getenv("OPENAI_API_KEY")
-config_list = [
-    {
-        "model": "gpt-3.5-turbo-1106",
-        "api_key": openai_apikey,
-    }
-]
-assistant = ChainlitAssistantAgent("assistant", llm_config={"config_list": config_list})
-user_proxy = ChainlitUserProxyAgent(
-    "user_proxy",
-    code_execution_config={
-        "work_dir": "../_workspace",  # prevent reloading
-        "use_docker": False,
-    },
-    is_termination_msg=is_termination_msg,
-)
-
-
-@cl.on_message
-async def main(message: cl.Message):
-    await cl.make_async(user_proxy.initiate_chat)(
-        assistant,
-        message=message.content,
-    )
