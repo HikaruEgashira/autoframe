@@ -8,6 +8,7 @@ import chainlit as cl
 from autoframe.express.agent import ChainlitAssistantAgent, ChainlitUserProxyAgent
 from autoframe.express.config import is_termination_msg, llm_config
 from autoframe.express.tools.ask_programmer import ask_programmer, ask_programmer_doc
+from autoframe.express.tools.search import search, search_doc
 
 logging.basicConfig(level=logging.INFO)
 
@@ -18,6 +19,7 @@ assistant = ChainlitAssistantAgent(
         **llm_config,
         "functions": [
             ask_programmer_doc,
+            search_doc,
         ],
     },
 )
@@ -25,7 +27,7 @@ user_proxy = ChainlitUserProxyAgent(
     "user_proxy",
     code_execution_config=False,
     is_termination_msg=is_termination_msg,
-    function_map={"ask_programmer": ask_programmer},
+    function_map={"ask_programmer": ask_programmer, "search": search},
 )
 
 

@@ -3,6 +3,7 @@
 ```bash
 poetry install --no-root
 echo "export OPENAI_API_KEY=sk-xxx" > .env
+echo "export TAVILY_API_KEY=tvly-xxx" > .env
 
 chainlit run autoframe/express/app.py
 ```
