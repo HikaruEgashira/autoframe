@@ -1,6 +1,6 @@
 import os
 
-from autoframe.express.chainlit import ChainlitUserProxyAgent
+from autoframe.express.agent import ChainlitUserProxyAgent
 
 openai_apikey = os.getenv("OPENAI_API_KEY")
 config_list = [
@@ -21,19 +21,12 @@ llm_config = {
 
 
 def is_termination_msg(x):
-    return (
-        x.get("content", "")
-        and (
-            x.get("content", "").rstrip().endswith("TERMINATE") or x.get("content", "").rstrip().endswith("TERMINATE.")
-        )
-        and "```python" in x.get("content", "")
-    )
+    return x.get("content", "") and ("TERMINATE" in x.get("content", ""))
 
 
 def create_user_proxy(name="user_proxy"):
     user_proxy = ChainlitUserProxyAgent(
         name=name,
-        max_consecutive_auto_reply=0,  # terminate without auto-reply
         human_input_mode="NEVER",
         code_execution_config={
             "work_dir": f"../_workspace/{name}",  # prevent reloading

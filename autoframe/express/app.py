@@ -1,15 +1,32 @@
 """
-chainlit run autoframe/senarios/express/main.py -w
+chainlit run autoframe/express/main.py -w
 """
-
-
 import logging
 
 import chainlit as cl
 
-from autoframe.express.agents import assistant, user_proxy
+from autoframe.express.agent import ChainlitAssistantAgent, ChainlitUserProxyAgent
+from autoframe.express.config import is_termination_msg, llm_config
+from autoframe.express.tools.ask_programmer import ask_programmer, ask_programmer_doc
 
 logging.basicConfig(level=logging.INFO)
+
+assistant = ChainlitAssistantAgent(
+    "assistant",
+    system_message="",
+    llm_config={
+        **llm_config,
+        "functions": [
+            ask_programmer_doc,
+        ],
+    },
+)
+user_proxy = ChainlitUserProxyAgent(
+    "user_proxy",
+    code_execution_config=False,
+    is_termination_msg=is_termination_msg,
+    function_map={"ask_programmer": ask_programmer},
+)
 
 
 @cl.on_message

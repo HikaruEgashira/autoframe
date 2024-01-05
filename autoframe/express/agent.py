@@ -84,17 +84,11 @@ class ChainlitUserProxyAgent(UserProxyAgent):
         request_reply: Optional[bool] = None,
         silent: Optional[bool] = False,
     ):
-        if isinstance(message, str):
+        content = f"{message if isinstance(message, str) else message.get('content', '')}".replace("TERMINATE", "")
+        if self.name != "user_proxy":
             cl.run_sync(
                 cl.Message(
-                    content=f"@{recipient.name}\n{message}",
-                    author=self.name,
-                ).send()
-            )
-        elif "content" in message and message["content"] is not None:
-            cl.run_sync(
-                cl.Message(
-                    content=f'@{recipient.name}\n{message["content"]}',
+                    content=f"@{recipient.name}\n{content}",
                     author=self.name,
                 ).send()
             )
